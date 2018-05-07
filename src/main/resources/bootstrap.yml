@@ -1,0 +1,129 @@
+server.port: 8888
+
+spring:
+  application.name: config
+  profiles.active: dev
+  cloud.config.server:
+    git:
+      cloneOnStart: true
+      timeout: 30
+    health:
+      enabled: false
+
+management:
+  server:
+    port: 8887
+  endpoints:
+    web:
+      base-path: /manage
+      path-mapping.health: status
+  endpoint:
+    health:
+      enabled: true
+#      show-details: always
+
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: http://localhost:8761/eureka
+
+logging:
+  file: config.log
+
+---
+spring:
+  profiles: local-config
+  cloud.config.server:
+    git:
+      uri: file:/Users/dave/workspace/xiaoyingxi/config-repo
+
+---
+spring:
+  profiles: dev-rabbitmq
+  rabbitmq:
+    addresses: 127.0.0.1:5672
+    username: guest
+    password: guest
+    virtual-host: yuuyoo
+
+---
+spring:
+  profiles: encryption
+encrypt:
+  keyStore:
+    location: classpath:/keystore/config-server.keystore
+    password: letmein
+    alias: config-server
+    secret: letyouin
+
+---
+spring:
+  profiles: dev
+  profiles.include: dev-rabbitmq, encryption, local-config, dev-eureka
+
+---
+spring:
+  profiles: test
+  profiles.include: local-config
+  cloud.config.server.encrypt.enabled: false
+
+---
+spring:
+  profiles: remote-config
+  cloud.config.server.git:
+    uri: git@github.com:xiaoyingxi/config-repo.git
+    strict-host-key-checking: false
+    ignoreLocalSshSettings: true
+    privateKey: |
+                -----BEGIN RSA PRIVATE KEY-----
+                MIIEpQIBAAKCAQEA1XSt/OdaHu/+r/tQSFRzDBLJXvQiV35Frr0+SeyDlHDjS9kR
+                OpyOhH8AGisv0m1VtYwqAEhrb/KCJ5lthcd71QLAsYH2EuRemwtCTKPyGIuVxFiS
+                elw1kRNOsXV7vjMuSpmwR+CAiJoHtW/4puxpKfe1+64c8+4Z2Ts/W65vqJOA0ASP
+                eN//cB/tMMxNTDHUGSAfrKy36XXT9dK9QO6LAvEEYcpDbLOCoMXtaLDrIAtDe9Ml
+                YMxbD/wRBGVc13k+58gINBjd47YEcfjTWZv9ARP15eLRaCnZ+DYO+1fZ6wnr96Gp
+                rKXbjZJGUVoWgKTneuOkFaXM9STj0vwAX+ITCQIDAQABAoIBAQCD0K0NC3Vcu4oE
+                9OYr9HKjVwqhp5N5glHXyaeokPTkex3yHdcE4d8ktSTEBD1g7gHKvgbF6/Lky9ZS
+                S+4Veg3fifai54WlPv+pMTe9ClUbkT9oY+X4x+6Qa2LiNZG37/U7PlNc36egM7Zk
+                9gOQWVfMAduQ04GvpS6zNmI25K6xY1yX9NX3Wx2A7WkWRZyOVBvuGhd4rWUC6orA
+                nuREBUbu1ZQIIwh6b2MVLPF6KaRdSzXxogDMCIRayqJL+Jvywz7j5Q8ISekNoG/5
+                lupFOfsWSdjs4472rvH4FbSTJPxHlBw7mvtBdpTg7uXCWeWYfKPf9WwuRXj7Mkvz
+                NZIg+geBAoGBAO5+WvaRkemyUWHfdMzYH5KtwDsrVvBGEPQyUvDxLDh1GPxEePdY
+                oi2pA885KpZRSr7cvnFYSErRoD1b0speNRJggYDbZMEtY/3m+k+GOP9o3aEGR48Y
+                LYTTECOYF1ubS3pMiY+0Wdi9R0DxKx4Xto/emYh/CDjiqzPuKkfxR6HZAoGBAOUf
+                080234jlrvRZQCfGv3jMSaYBFgiCw3YtVwsjHDIafQ8X5wsoGfnBsaRjG8sokHyl
+                WyqzIc6GnXqQ6mvkWygf/icQSHf6zB+KjVb1O6GZ014SivWII0stCCKAvOnkb3Ve
+                3S4dJoE9Di8inPI1XSm6TVuzC2tem4V3I0XvzQyxAoGBAN0Jdrz3hciWYB7Zv6Lq
+                27hSGMu+C0F9btEkowJ0Q4u/23xS6do053pyHvm7/eB7T089v7PFIptVVbIInIC6
+                d22ky+HldKglrXrwzCVQPRta0a4f58qTmfx0sYyLtXpNn9KlhQkPGgZqxtNFsbSe
+                PbFxmdKMCc7PJeVnYwByevVhAoGAaUD3sTvV8DNi7YjaeetJJhricknpbztywyUM
+                6WbVmwakEHzwfCWN2TfrfRKyP9+AkGH9wV3M1+zrBtTve2TJo2MfA57tS4CAqLSj
+                PSEmpZPej0aBY02IuQ4UwJTXM7LmqMpNXNOzTodXrrt90Z5GD9cvlkJnqokpdGRI
+                ZeZFEeECgYEA6v93Ob2Q/UouVexBuAN44Aht/vkMAEzqFlrGC9JYZbtPq9Bg3N4j
+                3q+9M/IsGBhidr2pSQWfSxkZ42o/H+ywRuXArmX6poGO9+9Jj27umUGp2We5GX91
+                UI+cyePDc+tJlUVVUtQb6sJgu7R+aXT/zxnERTKB7bd27qwVMjZri3A=
+                -----END RSA PRIVATE KEY-----
+
+---
+spring:
+  profiles: svt
+  profiles.include: encryption, remote-config
+  rabbitmq:
+    addresses: 192.168.2.209:5672, 192.168.2.211:5672
+    username: pilipaadmin
+    virtual-host: pilipa
+logging:
+  config: classpath:logback-production.xml
+
+---
+spring:
+  profiles: pro
+  profiles.include: remote-config
+  rabbitmq:
+    addresses: 192.168.14.180:5672,192.168.12.192:5672
+    username: guest
+    virtual-host: pilipa
+encrypt:
+  keyStore:
+    location: classpath:/keys/server.jks
+logging:
+  config: classpath:logback-production.xml
