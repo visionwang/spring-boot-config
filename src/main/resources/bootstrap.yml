@@ -2,7 +2,7 @@ server.port: 8888
 
 spring:
   application.name: config
-  profiles.active: svt
+  profiles.active: dev
   cloud.config.server:
     git:
       cloneOnStart: true
@@ -19,16 +19,8 @@ management:
       path-mapping.health: status
   endpoint:
     health:
+      show-details: always
       enabled: true
-#      show-details: always
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka}
-
-#logging:
-#  file: config.log
 
 ---
 spring:
@@ -37,35 +29,16 @@ spring:
     git:
       uri: file:/Users/dave/workspace/xiaoyingxi/config-repo
 
----
-spring:
-  profiles: dev-rabbitmq
-  rabbitmq:
-    addresses: 127.0.0.1:5672
-    username: guest
-    password: guest
-    virtual-host: yuuyoo
-
----
-spring:
-  profiles: encryption
-encrypt:
-  keyStore:
-    location: classpath:/keystore/config-server.keystore
-    password: letmein
-    alias: config-server
-    secret: letyouin
 
 ---
 spring:
   profiles: dev
-  profiles.include: dev-rabbitmq, encryption, local-config
-
----
-spring:
-  profiles: test
   profiles.include: local-config
-  cloud.config.server.encrypt.enabled: false
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
 
 ---
 spring:
@@ -107,23 +80,19 @@ spring:
 spring:
   profiles: svt
   profiles.include: encryption, remote-config
- # rabbitmq:
- #   addresses: 192.168.2.209:5672, 192.168.2.211:5672
- #   username: pilipaadmin
- #   virtual-host: pilipa
-#logging:
-#  config: classpath:logback-production.xml
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://yuuyoo-eureka:8761/eureka/
 
 ---
 spring:
   profiles: pro
-  profiles.include: remote-config
- # rabbitmq:
- #   addresses: 192.168.14.180:5672,192.168.12.192:5672
- #   username: guest
- #   virtual-host: pilipa
-encrypt:
-  keyStore:
-    location: classpath:/keys/server.jks
-#logging:
-#  config: classpath:logback-production.xml
+  profiles.include: encryption,remote-config
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://yuuyoo-eureka:8761/eureka/
+
